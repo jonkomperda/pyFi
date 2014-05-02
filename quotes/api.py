@@ -1,6 +1,10 @@
 import urllib
 import re
 
+## Gets quote for a symbol from Google Finance
+# @param symbol= String name of stock symbol. For example 'GOOG' would be Google
+#
+# Uses urllib to get quote from http://finance.google.com/finance?q=
 def get_quote_google(symbol):
     base_url = 'http://finance.google.com/finance?q='
     content = urllib.urlopen(base_url + symbol).read()
@@ -12,6 +16,10 @@ def get_quote_google(symbol):
         quote = float(raw_input('Please enter symbol quote: $'))
     return float(quote)
 
+## Gets quote for a symbol from Yahoo Finance
+# @param symbol= String name of stock symbol. For example 'GOOG' would be Google
+#
+# Uses urllib to get quote from http://finance.yahoo.com/q?s=
 def get_quote_yahoo(symbol):
     base_url = 'http://finance.yahoo.com/q?s='
     content = urllib.urlopen(base_url + symbol).read()
@@ -23,8 +31,9 @@ def get_quote_yahoo(symbol):
         quote = float(raw_input('Please enter symbol quote: $'))
     return float(quote)
 
+## Gets the risk free rate
+# Uses 1 year Treasury Note rate from bankrate.com
 def get_risk_free():
-    """Gets the risk free interest rate"""
     base_url = 'http://www.bankrate.com/rates/interest-rates/1-year-treasury-rate.aspx'
     content = urllib.urlopen(base_url).read()
     m = re.search('class="tabledataoddnew">0(.*?)<',content)

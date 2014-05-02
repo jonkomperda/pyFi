@@ -2,7 +2,17 @@ from numpy import *
 from numpy.linalg import solve
 
 class BS_fd_implicit():
-    """Solution for the Black Scholes equation using an explicit central-space finite difference solver"""
+    ## Called upon initialization of the Finite Difference method for Europeans
+    #
+    # @param S = Spot Price of asset
+    # @param E = Exercise / Strike price
+    # @param r = Risk free interest rate
+    # @param sigma = Volatility of the asset (\f$\sigma\f$)
+    # @param L = Length of spot domain
+    # @param T = Time to expiry (defaults to 1.0)
+    # @param k = Number of timesteps
+    # @param M = Discretization points
+    # @param opt = 'call' or 'put' (defaults to 'put')
     def __init__(self, S, E, r, sigma, L, T=1.0, k=400, M=400, opt='put'):
         """Initializes all class variables and calculates constants"""
         self.S = S
@@ -38,7 +48,7 @@ class BS_fd_implicit():
     
     
     def strike(self):
-        """creates a strike array"""
+        """creates a spot array"""
         return self.h*self.n 
     
     
@@ -122,11 +132,20 @@ class BS_fd_implicit():
         else:
             return self.interp_solution(U,bottom,top)
 
-
+## Solution for the Black Scholes equation using an explicit central-space finite difference solver
 class BS_fd_explicit():
-    """Solution for the Black Scholes equation using an explicit central-space finite difference solver"""
+    ## Called upon initialization of the Finite Difference method for Europeans
+    #
+    # @param S = Spot Price of asset
+    # @param E = Exercise / Strike price
+    # @param r = Risk free interest rate
+    # @param sigma = Volatility of the asset (\f$\sigma\f$)
+    # @param L = Length of spot domain
+    # @param T = Time to expiry (defaults to 1.0)
+    # @param k = Number of timesteps
+    # @param M = Discretization points
+    # @param opt = 'call' or 'put' (defaults to 'put')
     def __init__(self, S, E, r, sigma, L, T=1.0, k=400, M=400, opt='put'):
-        """Initializes all class variables and calculates constants"""
         self.S = S
         self.E = E
         self.r = r
@@ -145,9 +164,16 @@ class BS_fd_explicit():
         self.Mat = self.build_matrix()
         
     
-    
+    ## Builds the operator matrix for explicit FD
+    #
+    # \f[ \begin{bmatrix}1 & 0 & 0 & \cdots & 0 & 0 & 0 \\ a & b & c & \cdots & 0 & 0 & 0 \\ 0 & a & b &        & 0 & 0 & 0 \\ \vdots  & \vdots &   & \ddots  & & \vdots & \vdots  \\ 0 & 0 & 0 & \cdots & b & c & 0 \\ 0 & 0 & 0 & \cdots & a & b & c \\ 0 & 0 & 0 & \cdots & 0 & 0 & 1 \end{bmatrix}\f]
+    #
+    # Where:
+    # 
+    # \f[ a = \frac{ 1 }{ 2 }(\Delta t)rn[\sigma^2 n - r]\\
+    #  b = 1- (\Delta t)rn[\sigma^2 n^2 - r]\\
+    #  = \frac{ 1 }{ 2 }(\Delta t)rn [ \sigma^2 n + r]. \f]
     def build_matrix(self):
-        """Builds the operator matrix for the Black Scholes equation"""
         a = 0.5*self.dt*(self.sigma**2 * self.n**2 - self.r*self.n)
         b = 1.0 - self.dt*(self.sigma**2 * self.n**2 + self.r)
         c = 0.5*self.dt*(self.sigma**2*self.n**2 + self.r*self.n)
@@ -218,7 +244,9 @@ class BS_fd_explicit():
         
         return sol
     
-    
+    ## Linear Interpolant routine
+    #
+    # \f[y = y_0 + (y_1-y_0)\frac{ x-x_0 }{ x_1-x_0 }\f]
     def interp_solution(self,u,i0,i1):
         """Interpolates the solution from the 1d surface for the strike price we are interested in"""
         x = self.n*self.h
