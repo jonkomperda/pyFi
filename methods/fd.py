@@ -1,6 +1,12 @@
+## @package pyFi.methods.fd
+# Contains finite difference approaches for the Black-Scholes PDE
+
 from numpy import *
 from numpy.linalg import solve
 
+## Implicit method for solving BS Equation
+# @todo: DOES NOT CURRENTLY WORK
+# @todo: REQUIRES DOCUMENTATION
 class BS_fd_implicit():
     ## Called upon initialization of the Finite Difference method for Europeans
     #
@@ -133,6 +139,15 @@ class BS_fd_implicit():
             return self.interp_solution(U,bottom,top)
 
 ## Solution for the Black Scholes equation using an explicit central-space finite difference solver
+#
+# Solves the Black-Scholes equation,
+# \f[\boldsymbol V_t + \frac{1 }{ 2 } \sigma^2 \boldsymbol S^2 \boldsymbol V_{SS} + r \boldsymbol S \boldsymbol V_S - r \boldsymbol V = 0\f]
+# with boundary conditions for a put
+# \f[V(0,\tau) = Ee^{-r\tau}\f]
+# \f[V(L,\tau) = 0\f]
+# or for a call
+# \f[V(0,\tau) = 0\f]
+# \f[V(L,\tau) = S-Ee^{-r\tau}\f]
 class BS_fd_explicit():
     ## Called upon initialization of the Finite Difference method for Europeans
     #
@@ -185,35 +200,41 @@ class BS_fd_explicit():
         Mat[self.M-1,self.M-1] = 1
         return Mat
     
-    
+    ## Creates the spatial array
     def strike(self):
-        """creates a strike array"""
         return self.h*self.n 
     
-    
+    ## Initial condition for a call option
+    #
+    # \f[V(S,\tau) = \max(E-S,0) \f]
     def init_values_call(self):
-        """Initial condition for a call option"""
         val = maximum(self.strike()-self.E,0)
         return reshape(val,(self.M,1))
     
-    
+    ## Initial condition for a put option
+    #
+    # \f[ V(S,\tau) = \max(E-S,0) \f]
     def init_values_put(self):
-        """Initial condition for a put option"""
         val = maximum(self.E-self.strike(),0)
         return reshape(val,(self.M,1))
     
-    
+    ## Updates the boundary condition for each timestep
+    # 
+    # for a put
+    # \f[V(0,\tau) = Ee^{-r\tau}\f]
+    # \f[V(L,\tau) = 0\f]
+    # or for a call
+    # \f[V(0,\tau) = 0\f]
+    # \f[V(L,\tau) = S-Ee^{-r\tau}\f]
     def update_bc(self,U,i):
-        """Updates the explicit boundary condition for a call or a put"""
         if self.opt=='put':
             U[0,0] = self.E*exp(-self.r*self.dt*(i+1))
         elif self.opt=='call':
             U[self.M-1,0] = self.L-self.E*exp(-self.r*self.dt*(i+1))
         return U
     
-    
+    ## Solves the equation and returns the entire 1d surface
     def solve_1d_surface(self):
-        """Returns a 1D space line for the final time of BS equation"""
         if self.opt=='call':
             Uold =  self.init_values_call()
         elif self.opt=='put':
@@ -226,7 +247,7 @@ class BS_fd_explicit():
         
         return U
     
-    
+    ## Solves the equation and returns a surface as a function of time and space
     def solve_2d_surface(self):
         """Returns a time-space surface of the solution of the BS equation"""
         sol = []
@@ -258,7 +279,10 @@ class BS_fd_explicit():
         y = y0 + (y1-y0)*(self.S-float(x0))/(float(x1)-float(x0))
         return y
     
-    
+    ## This method solves the eactual problem for a single spot value we are intestested in
+    #
+    # Solves the 1-d surface for the final time then calls the interpolation routine to determine
+    # the value at the spot price of interest
     def solve(self):
         """Solves for a particular value by calling interpolation routine"""
         U = self.solve_1d_surface()
@@ -276,7 +300,7 @@ class BS_fd_explicit():
 
 if __name__ == '__main__':
     solver = BS_fd_explicit(S=4,E=5,r=0.04,sigma=0.3,M=20,L=10,k=25000,opt='put')
-    print solver.solve_1d_surface()
+    #print solver.solve_1d_surface()
     print solver.solve()
     
     #solver2 = BS_fd_implicit(S=3,E=2,r=0.05,sigma=0.3,M=6,L=10,k=100,opt='put')

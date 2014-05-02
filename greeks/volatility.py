@@ -1,3 +1,6 @@
+## @package pyFi.greeks.volatility
+# This packages contains methods of determining volatility of financial instruments.
+
 from pandas.io.data import DataReader
 from pandas import np 
 from numpy import *
@@ -40,4 +43,4 @@ def hist_vol(sym, days=10):
     
 
 if __name__ == '__main__':
-    #print hist_vol('goog',20)
+    print hist_vol('goog',20)

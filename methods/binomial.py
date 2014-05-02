@@ -1,3 +1,5 @@
+## @package pyFi.methods.binomial
+# Contains binomial method solvers for options
 from numpy import *
 class binomial_euro():
     ## Called upon initialization of the binomial method for Europeans
@@ -155,8 +157,8 @@ class binomial_amer(binomial_euro):
 
 
 if __name__ == '__main__':
-    #solve = binomial_euro(3,2,0.05,0.3,M=40000,method='higham')
+    solve = binomial_euro(3,2,0.05,0.3,M=40000,method='higham')
     #print solve.u
     #print solve.d
     #print solve.W
-    #print solve.solve()
+    print solve.solve()

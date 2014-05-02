@@ -1,3 +1,5 @@
+## @package pyFi.quotes.api
+# Methods for determining option prices and interest rates
 import urllib
 import re
 

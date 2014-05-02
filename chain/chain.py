@@ -1,3 +1,13 @@
+## @mainpage pyFi
+# The goal of this project is to take financial option valuation methods and make them accessible to the casual user through a Python module framework called `PyFi'. 
+# The deliverable is a Python package, capable of not only pricing options, but doing so in real time and producing highly accurate results. 
+# The solvers includes a vectorized fast Monte Carlo solver, a Binomial Method solver, and an explicit Finite Difference solver for the Black-Scholes partial differential equation. 
+# The results produced by these solvers may then be used to compare against real market prices, or used for market making to build an option chain.
+# \author Jonathan Komperda
+
+## @package pyFi.chain.chain
+# Contains all functions and classes relating to the creation of option chains.
+
 import sys
 sys.path.append('../')
 try:
@@ -78,6 +88,7 @@ class option_chain():
             
         
 if __name__ == '__main__':
-    #chain = option_chain(528.74,0.0011,0.3357,T=2.0/252.0,range=(480,5,580),method='bi')
-    #chain.generate()
-    #chain.export_csv('test.csv')
+    chain = option_chain(528.74,0.0011,0.3357,T=2.0/252.0,range=(480,5,580),method='bi')
+    chain.generate()
+    chain.export_csv('test.csv')
+    
